@@ -32,6 +32,7 @@ interface AppState {
   selectedDateForCalendar: string | null;
   newBookingModalOpen: boolean;
   selectedEnquiryForConversion: Enquiry | null;
+  sidebarMobileOpen: boolean;
 
   // Domain Data
   enquiries: Enquiry[];
@@ -44,6 +45,7 @@ interface AppState {
   // Actions
   setViewMode: (mode: ViewMode) => void;
   setManagementPage: (page: ManagementPage) => void;
+  setSidebarMobileOpen: (open: boolean) => void;
   openEnquiryModal: (prefilledDate?: string) => void;
   closeEnquiryModal: () => void;
   setSelectedBookingForDetail: (booking: Booking | null) => void;
@@ -91,6 +93,7 @@ export const useStore = create<AppState>((set, get) => ({
   selectedDateForCalendar: null,
   newBookingModalOpen: false,
   selectedEnquiryForConversion: null,
+  sidebarMobileOpen: false,
 
   // Domain Data
   enquiries: SEED_ENQUIRIES,
@@ -102,7 +105,8 @@ export const useStore = create<AppState>((set, get) => ({
 
   // Actions
   setViewMode: (mode) => set({ viewMode: mode }),
-  setManagementPage: (page) => set({ managementPage: page }),
+  setManagementPage: (page) => set({ managementPage: page, sidebarMobileOpen: false }),
+  setSidebarMobileOpen: (open) => set({ sidebarMobileOpen: open }),
   
   openEnquiryModal: (prefilledDate) => set({ 
     enquiryModalOpen: true, 

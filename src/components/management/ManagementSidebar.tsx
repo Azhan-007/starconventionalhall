@@ -3,7 +3,7 @@ import { useStore } from '../../store/useStore';
 import type { ManagementPage } from '../../types';
 import { 
   LayoutDashboard, Calendar, MessageSquare, BookOpen, Users, 
-  DollarSign, BarChart3, Settings, Zap, Star
+  DollarSign, BarChart3, Settings, Zap, Star, X
 } from 'lucide-react';
 
 interface NavItem {
@@ -14,7 +14,14 @@ interface NavItem {
 }
 
 export const ManagementSidebar: React.FC = () => {
-  const { managementPage, setManagementPage, enquiries, payments } = useStore();
+  const { 
+    managementPage, 
+    setManagementPage, 
+    enquiries, 
+    payments, 
+    sidebarMobileOpen, 
+    setSidebarMobileOpen 
+  } = useStore();
 
   const pendingEnquiries = enquiries.filter((e) => e.status === 'New').length;
   const pendingPayments = payments.filter((p) => p.status === 'Due' || p.status === 'Overdue').length;
@@ -56,18 +63,32 @@ export const ManagementSidebar: React.FC = () => {
     },
   ];
 
-  return (
-    <aside className="w-64 min-w-[256px] max-w-[256px] shrink-0 bg-white border-r border-[#E9E2E6] sticky top-[37px] h-[calc(100vh-37px)] flex flex-col pt-5 pb-6 overflow-y-auto z-30 select-none">
-      
+  const handleNavClick = (pageId: ManagementPage) => {
+    setManagementPage(pageId);
+    setSidebarMobileOpen(false);
+  };
+
+  const renderNavContent = () => (
+    <>
       {/* Brand Header */}
-      <div className="px-6 mb-6 flex items-center gap-3">
-        <div className="w-8 h-8 bg-[#7A284B] flex items-center justify-center shadow-xs">
-          <Star className="w-4 h-4 text-[#C49A45] fill-[#C49A45]/30" />
+      <div className="px-6 mb-6 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-[#7A284B] flex items-center justify-center shadow-xs">
+            <Star className="w-4 h-4 text-[#C49A45] fill-[#C49A45]/30" />
+          </div>
+          <div className="leading-tight">
+            <p className="text-[13px] font-bold text-[#242126] tracking-wider uppercase">STAR HALL</p>
+            <p className="text-[10px] text-[#9A9299] font-medium tracking-wide">Event Management</p>
+          </div>
         </div>
-        <div className="leading-tight">
-          <p className="text-[13px] font-bold text-[#242126] tracking-wider uppercase">STAR HALL</p>
-          <p className="text-[10px] text-[#9A9299] font-medium tracking-wide">Event Management</p>
-        </div>
+
+        {/* Mobile Close Button */}
+        <button
+          onClick={() => setSidebarMobileOpen(false)}
+          className="lg:hidden p-1.5 text-[#9A9299] hover:text-[#242126] hover:bg-[#FAF0F4] rounded-sm transition-colors cursor-pointer"
+        >
+          <X className="w-5 h-5" />
+        </button>
       </div>
 
       {/* Nav List */}
@@ -85,7 +106,7 @@ export const ManagementSidebar: React.FC = () => {
                 return (
                   <button
                     key={item.id}
-                    onClick={() => setManagementPage(item.id)}
+                    onClick={() => handleNavClick(item.id)}
                     className={`w-full flex items-center gap-3 px-3.5 py-2.5 text-[13px] font-medium transition-all duration-150 cursor-pointer ${
                       isActive
                         ? 'bg-[#FAF0F4] text-[#7A284B] font-semibold border-l-2 border-[#7A284B]'
@@ -114,6 +135,31 @@ export const ManagementSidebar: React.FC = () => {
         <p className="text-[11px] text-[#9A9299] font-light">Pernambut, Tamil Nadu</p>
         <p className="text-[10px] text-[#C49A45] font-medium uppercase tracking-wider mt-0.5">Demo Instance</p>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Desktop Sticky Sidebar */}
+      <aside className="hidden lg:flex w-64 min-w-[256px] max-w-[256px] shrink-0 bg-white border-r border-[#E9E2E6] sticky top-[37px] h-[calc(100vh-37px)] flex-col pt-5 pb-6 overflow-y-auto z-30 select-none">
+        {renderNavContent()}
+      </aside>
+
+      {/* Mobile Drawer (When Open) */}
+      {sidebarMobileOpen && (
+        <div className="fixed inset-0 top-[37px] z-50 lg:hidden">
+          {/* Backdrop */}
+          <div 
+            onClick={() => setSidebarMobileOpen(false)}
+            className="absolute inset-0 bg-black/50 backdrop-blur-xs animate-fadeIn"
+          ></div>
+
+          {/* Drawer */}
+          <aside className="relative w-72 max-w-[85vw] h-full bg-white flex flex-col pt-5 pb-6 shadow-2xl border-r border-[#E9E2E6] overflow-y-auto select-none animate-slideLeft z-10">
+            {renderNavContent()}
+          </aside>
+        </div>
+      )}
+    </>
   );
 };
